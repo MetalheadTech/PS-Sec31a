@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<psExtension xmlns="http://www.powerschool.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.powerschool.com psextension.xsd">
+    <extensionname>u_tsd_31atracker</extensionname>
+    <extendedTable coreTable="Students" dbTableName="U_TSD_31ATRACKER" comment="Additional medical information">
+        <field name="sed" type="boolean" />
+        <field name="el" type="boolean" />
+        <field name="immigrant" type="boolean" />
+        <field name="abuse" type="boolean" />
+        <field name="teenparent" type="boolean" />
+        <field name="famhist" type="boolean" />
+        <field name="absence" type="boolean" />
+        <field name="hs_complete" type="boolean" />
+        <field name="state_assess_prof" type="boolean" />
+        <field name="local_assess_prof" type="boolean" />
+
+		<field name="update_log" type="string" length="100" />
+    </extendedTable>
+</psExtension>

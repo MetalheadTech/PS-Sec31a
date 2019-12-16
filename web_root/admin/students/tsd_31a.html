@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Section 31a Tracker</title>
+<!-- required scripts -->
+ ~[wc:commonscripts] 
+<!-- Required style sheets: screen.css, and print.css -->
+ <link href="/images/css/screen.css" rel="stylesheet" media="screen">
+ <link href="/images/css/print.css" rel="stylesheet" media="print">
+</head> 
+<body> 
+ ~[wc:admin_header_frame_css]
+ <!-- breadcrumb start -->
+ <a href="/admin/home.html" target="_top">Start Page</a> &gt; <a href="/admin/students/home.html?selectstudent=nosearch" target="_top">Student Selection</a> &gt; Section 31a Tracker
+ <!-- breadcrumb end -->
+~[wc:admin_navigation_frame_css]
+<!-- start of main menu and content -->
+~[wc:title_student_begin_css]Section 31a Tracker~[wc:title_student_end_css]
+
+<!-- Feedback area -->
+~[tlist_sql;
+	select
+		count(*)
+	from
+		u_tsd_31atracker
+	where
+		studentsdcid = ~(rn)
+]
+<script type="text/javascript">
+	var exist = ~(1);
+	if (exist != 1) {
+		document.write('<div class="feedback-alert">Please click the SUBMIT button below to begin, even if you did not make any changes yet.</div>');
+	}
+</script>
+[/tlist_sql]
+<!-- End feedback area -->
+
+<form action="/~[self.page]?frn=~(studentfrn)&changesSaved=true" method="POST">
+<!-- start of content area -->
+~[if.gpv.changesSaved=true]<div class="feedback-confirm">~[text:psx.common.changes_recorded]</div>[/if]
+ <div class="box-round">
+
+<table border="0" cellpadding="0" cellspacing="0" class="grid" id="tsd_31atrackertable"> 
+	<thead> 
+		<tr> 
+			<th>Section 31a Criteria</th> 
+			<th>Applies to Student</th> 
+		</tr> 
+	</thead> 
+	<tfoot>
+		<tr>
+			<td colspan=2 style="background-color: #ffffdd">
+				<b>Note: </b> Students already identified in MSDS as Economically Disadvantaged, English Learner, or Immigrant do not need to be 
+				double identified/coded as At-Risk (3060) due to those students automatically being identified as At-Risk in the data system. 
+			</td>
+		</tr>
+	</tfoot>
+	<tbody>
+		<tr>
+			<td>
+				<b>Economically Disadvantaged</b><br />
+				<i>Automatically identified from Lunch Status</i>
+			</td>
+			<td>
+				~[if#sed.~(lunchstatus)#P]
+					Yes
+				[else#sed]
+					No
+				[/if]
+				
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<b>English Learner</b><br />
+				<i>Automatically identified from MI state pages</i>
+			</td>
+			<td>
+				~[if#el.~([students.s_mi_stu_gc_x]flagLEP)=1]
+					Yes
+				[else#el]
+					No
+				[/if#el]
+			</td>
+		</tr>
+		
+		<tr>
+			<td>
+				<b>Immigrant Within Past 3 Years</b><br />
+				<i>Automatically identified from MI state pages</i><br />
+				<i>Entry Year: ~([students.s_mi_stu_gc_x]ImmEntryYear)</i>
+			</td>
+			<td>
+			~[tlist_sql;
+			select
+				case
+					when 2019-immentryyear <= 3 then 'Yes'
+					else 'No'
+				end as RecentImmigrant
+			from
+				s_mi_stu_gc_x
+			where
+				studentsdcid = ~(rn)
+			]
+			~(1)
+			[/tlist_sql]
+			</td>
+		</tr>
+		
+		<tr> 
+			<td>
+				<b>Victim of Child Abuse/Neglect</b>
+			</td> 
+			<td>
+				<input type="checkbox" name="[students.u_tsd_31atracker]abuse" value="1" />
+			</td> 
+		</tr> 
+		
+		<tr> 
+			<td>
+				<b>Pregnant Teen/Teen Parent</b>
+			</td> 
+			<td>
+				<input type="checkbox" name="[students.u_tsd_31atracker]teenparent" value="1" />
+			</td> 
+		</tr> 
+		
+		<tr> 
+			<td>
+				<b>Family History of School Failure, Incarceration, or Substance Abuse</b>
+			</td> 
+			<td>
+				<input type="checkbox" name="[students.u_tsd_31atracker]famhist" value="1" />
+			</td> 
+		</tr> 
+		
+		<tr> 
+			<td>
+				<b>Absence 10% or More of Enrolled Days (min. 10 days enrolled)</b><br />
+				<i>Days Absent: </i>
+				~[tlist_sql;
+					select
+						count(*)
+					from
+						ps_adaadm_meeting_ptod a
+							join students s on a.studentid = s.id
+					where
+						s.dcid = ~(rn)
+						and
+						attendancevalue < .5
+						and
+						calendardate >= s.entrydate
+						and
+						calendardate <= sysdate
+				]
+				~(1)
+				[/tlist_sql]
+				<br />
+				<i>Days Enrolled: </i>
+				~[tlist_sql;
+					select
+						count(*)
+					from
+						ps_adaadm_meeting_ptod a
+							join students s on a.studentid = s.id
+					where
+						s.dcid = ~(rn)
+						and
+						calendardate >= s.entrydate
+						and
+						calendardate <= sysdate
+				]
+				~(2)
+				[/tlist_sql]				
+			</td> 
+			<td>
+				~[tlist_sql;
+					with daysabs as (
+						select
+							count(*) as days
+						from
+							ps_adaadm_meeting_ptod a
+								join students s on a.studentid = s.id
+						where
+							s.dcid = ~(rn)
+							and
+							attendancevalue < .5
+							and
+							calendardate >= s.entrydate
+							and
+							calendardate <= sysdate
+						) ,
+						daysenrolled as (
+							select
+								count(*) as days
+							from
+								ps_adaadm_meeting_ptod a
+									join students s on a.studentid = s.id
+							where
+								s.dcid = ~(rn)
+								and
+								calendardate >= s.entrydate
+								and
+								calendardate <= sysdate
+						)
+					select
+						case
+							when daysenrolled.days >=10 and daysabs.days / daysenrolled.days >= .1 then 'Yes'
+							else 'No'
+						end as att_atrisk_label
+						, case
+							when daysabs.days / daysenrolled.days >= .1 then 1
+							else 0
+						end as att_atrisk_value
+					from
+						daysabs
+						, daysenrolled				
+				]
+				~(1)
+				<script>
+					var absVal=~(2);
+				</script>
+				[/tlist_sql]
+				<input type="hidden" id="absvalform" name="[students.u_tsd_31atracker]absence" value="" />
+			</td> 
+		</tr> 
+		
+		<tr> 
+			<td>
+				<b>Did Not Complete High School in 4 Years and Is Continuing in School</b>
+			</td> 
+			<td>
+				<input type="checkbox" name="[students.u_tsd_31atracker]hs_complete" value="1" />
+			</td> 
+		</tr> 
+		
+		<tr> 
+			<td>
+				<b>Did Not Achieve Proficiency on English Language Arts (ELA), Mathematics, Science, or Social Studies Content Area State Assessment(s)/b>
+			</td> 
+			<td>
+				<input type="checkbox" name="[students.u_tsd_31atracker]state_assess_prof" value="1" />
+			</td> 
+		</tr> 
+		
+		<tr> 
+			<td>
+				<b>At Risk for Not Meeting LEA's Core Curricular Objectives in ELA or Mathematics as Demonstrated on Local Assessments</b>
+			</td> 
+			<td>
+				<input type="checkbox" name="[students.u_tsd_31atracker]local_assess_prof" value="1" />
+			</td> 
+		</tr> 
+	
+	</tbody> 
+</table> 
+<script>
+	var updatedBy = '~[date] at ~[time] by ~[x:username;firstlast]';
+</script>
+<input type="hidden" id="updateuser" name="[students.u_tsd_31atracker]update_log" value="" />
+ <div class="button-row"><input type="hidden" name="ac" value="prim">~[submitbutton]</div>
+ </div>
+</form>
+<!-- end of content area -->
+ ~[wc:admin_footer_frame_css]
+ 
+<script>
+	$j(document).ready(function() {
+		$j('#updateuser').val(updatedBy);
+		$j('#absvalform').val(absVal);
+	});
+</script>
+</body> 
+</html>

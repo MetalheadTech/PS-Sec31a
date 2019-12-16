@@ -1,0 +1,21 @@
+
+<!-- Menu item for TSD iPads -->
+<!--Sort code created by Adam Larsen-->
+<script>
+
+$j(document).ready(function()
+	{
+		$j('ul#std_administration').append('<li><a href="tsd_31a.html?frn=~(studentfrn)">Section 31a Tracker</a></li>');	
+		
+		$j('ul#std_administration li').sort(function(a, b)
+			{
+				if($j(a).text() < $j(b).text()) return -1;
+				if($j(a).text() > $j(b).text()) return 1;
+				return 0;
+			}
+		).appendTo('ul#std_administration');
+	}
+);
+
+</script>
+<!-- -->

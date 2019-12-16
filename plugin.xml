@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://plugin.powerschool.pearson.com"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://plugin.powerschool.pearson.com plugin.xsd"
+	name="TSD 31a Tracker"
+	version="0.1"
+	description="Survey form to capture criteria for Michigan Section 31a At-Risk">
+	
+	<publisher name="Jerome Ohnui">
+		<contact email="johnui@troy.k12.mi.us" />
+	</publisher>
+</plugin>
+ 
